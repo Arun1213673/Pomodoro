@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: green;
+            color: white;
+            text-align: left;
+            font-size: 50px;
+            padding: 20px;
+            margin-top: 100px;
+        }
+
+        #timer {
+            font-size: 100px;
+            font-weight: bold;
+            background-color: rgba(0, 0, 0, 0.7);
+            width: 500px;
+            padding: 5px;
+            text-align: center;
+        }
+
+        #session-container {
+            display: flex;
+            align-items: center;
+        }
+
+        #session-text {
+            margin: 0;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            width: 500px;
+            padding: 5px;
+            font-weight: bold; 
+            font-family: Tahoma;
+        }
+
+        #options {
+            display: flex;
+            flex-direction: column;
+            width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div id="timer-container">
+        <div id="session-container">
+            <p id="session-text">Study Session #1</p>
+        </div>
+        <div id="timer">00:00</div>
+        <div id="buttons">
+            <button id="play-pause">Play</button>
+            <button id="reset">Reset</button>
+            <button id="toggle-session">Toggle</button>
+        </div>
+    </div>
+    <div id="options">
+        <label for="focus-duration">Focus Duration (minutes):</label>
+        <input type="number" id="focus-duration" value="60">
+        <label for="break-duration">Break Duration (minutes):</label>
+        <input type="number" id="break-duration" value="10">
+        <label for="session-number">Session #:</label>
+        <input type="number" id="session-number" value="1">
+    </div>
+
+    <script>
+        let timerInterval;
+        let isCounting = false;
+        let focusDuration = 60 * 60; // Seconds
+        let breakDuration = 10 * 60; // Seconds
+        let sessionNumber = 1;
+        let isFocusSession = true;
+        let seconds = 0;
+
+        const timer = document.getElementById("timer");
+        const sessionText = document.getElementById("session-text");
+        const toggleSessionButton = document.getElementById("toggle-session");
+        const playPauseButton = document.getElementById("play-pause");
+        const resetButton = document.getElementById("reset");
+        const focusDurationInput = document.getElementById("focus-duration");
+        const breakDurationInput = document.getElementById("break-duration");
+        const sessionNumberInput = document.getElementById("session-number");
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            timer.innerText = `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+        }
+
+        function toggleTimer() {
+            if (isCounting) {
+                clearInterval(timerInterval);
+                playPauseButton.innerText = "Play";
+            } else {
+                timerInterval = setInterval(updateTime, 1000);
+                playPauseButton.innerText = "Pause";
+            }
+            isCounting = !isCounting;
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isCounting = false;
+            playPauseButton.innerText = "Play";
+            if (isFocusSession) {
+                seconds = focusDuration;
+            } else {
+                seconds = breakDuration;
+            }
+            updateTimerDisplay();
+            sessionNumber = parseInt(sessionNumberInput.value);
+        }
+
+        function updateTime() {
+            if (seconds > 0) {
+                seconds--;
+            } else {
+                if (isFocusSession) {
+                    isFocusSession = false;
+                    sessionNumber++;
+                    seconds = breakDuration;
+                } else {
+                    isFocusSession = true;
+                    seconds = focusDuration;
+                }
+                sessionText.innerText = isFocusSession ? `Study Session #${sessionNumber}` : "Break";
+            }
+            updateTimerDisplay();
+        }
+
+        focusDurationInput.addEventListener("change", () => {
+            focusDuration = parseInt(focusDurationInput.value) * 60;
+            resetTimer();
+        });
+
+        breakDurationInput.addEventListener("change", () => {
+            breakDuration = parseInt(breakDurationInput.value) * 60;
+            resetTimer();
+        });
+
+        sessionNumberInput.addEventListener("change", () => {
+            sessionNumber = parseInt(sessionNumberInput.value);
+            sessionText.innerText = isFocusSession ? `Study Session #${sessionNumber}` : "Break";
+            resetTimer();
+        });
+
+        toggleSessionButton.addEventListener("click", () => {
+            isFocusSession = !isFocusSession;
+            sessionText.innerText = isFocusSession ? `Study Session #${sessionNumber}` : "Break";
+            resetTimer();
+        });
+
+        playPauseButton.addEventListener("click", toggleTimer);
+        resetButton.addEventListener("click", resetTimer);
+
+        resetTimer();
+    </script>
+</body>
+</html>
