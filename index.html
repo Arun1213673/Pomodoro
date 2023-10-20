@@ -123,7 +123,7 @@
                     isFocusSession = true;
                     seconds = focusDuration;
                 }
-                sessionText.innerText = isFocusSession ? `Study Session #${sessionNumber}` : "Break";
+                sessionText.innerText = isFocusSession ? `Study Session #${sessionNumber}` : "Short Break";
             }
             updateTimerDisplay();
         }
@@ -140,13 +140,13 @@
 
         sessionNumberInput.addEventListener("change", () => {
             sessionNumber = parseInt(sessionNumberInput.value);
-            sessionText.innerText = isFocusSession ? `Study Session #${sessionNumber}` : "Break";
+            sessionText.innerText = isFocusSession ? `Study Session #${sessionNumber}` : "Short Break";
             resetTimer();
         });
 
         toggleSessionButton.addEventListener("click", () => {
             isFocusSession = !isFocusSession;
-            sessionText.innerText = isFocusSession ? `Study Session #${sessionNumber}` : "Break";
+            sessionText.innerText = isFocusSession ? `Study Session #${sessionNumber}` : "Short Break";
             resetTimer();
         });
 
